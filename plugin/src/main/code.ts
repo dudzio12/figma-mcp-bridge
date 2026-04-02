@@ -67,13 +67,15 @@ const handleRequest = async (
         return {
           type: request.type,
           requestId: request.requestId,
-          data: serializeNode(figma.currentPage),
+          data: await serializeNode(figma.currentPage),
         };
       case "get_selection":
         return {
           type: request.type,
           requestId: request.requestId,
-          data: figma.currentPage.selection.map((node) => serializeNode(node)),
+          data: await Promise.all(
+            figma.currentPage.selection.map((node) => serializeNode(node))
+          ),
         };
       case "get_node": {
         const nodeId = request.nodeIds && request.nodeIds[0];
@@ -87,7 +89,7 @@ const handleRequest = async (
         return {
           type: request.type,
           requestId: request.requestId,
-          data: serializeNode(node as SceneNode),
+          data: await serializeNode(node as SceneNode),
         };
       }
       case "get_styles": {
@@ -147,8 +149,8 @@ const handleRequest = async (
         const serializeWithDepth = async (
           node: unknown,
           currentDepth: number
-        ): Promise<ReturnType<typeof serializeNode>> => {
-          const serialized = serializeNode(node);
+        ): Promise<Awaited<ReturnType<typeof serializeNode>>> => {
+          const serialized = await serializeNode(node);
           if (currentDepth >= depth && serialized.children) {
             // Truncate children at depth limit, but show count
             return {
