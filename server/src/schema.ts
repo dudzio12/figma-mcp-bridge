@@ -1,9 +1,9 @@
 import { z } from "zod";
 
-/** Figma node IDs use colon-separated format, e.g. "4029:12345". */
+/** Figma node IDs: simple "123:456" or nested instance "I123:456;789:012". */
 export const figmaNodeId = z
   .string()
-  .regex(/^\d+:\d+$/, "Node ID must use colon format, e.g. '4029:12345'");
+  .regex(/^(I?\d+:\d+)(;\d+:\d+)*$/, "Node ID must be e.g. '123:456' or 'I123:456;789:012'");
 const exportFormat = z.enum(["PNG", "SVG", "JPG", "PDF"]);
 
 export const toolInputSchemas = {
